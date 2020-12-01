@@ -14,12 +14,13 @@ class ROSBagHandler():
 
         self.thread = Thread(target=self.threaded_rosbag)
 
-        rospack = rospkg.RosPack()
-        package_path = rospack.get_path('teleop_ros')
+        # rospack = rospkg.RosPack()
+        # package_path = rospack.get_path('teleop_ros')
         # self.dataset_path = package_path + '/dataset/'
         self.dataset_path = '~/dataset/'
         
-        command_sub_ = rospy.Subscriber('/logging', Bool, self.command_cb)
+        rospy.Subscriber('/logging', Bool, self.command_cb)
+        # rospy.Service('logging_service', Trigger, self.logging_cb)
         rospy.spin()
 
     def threaded_rosbag(self):
@@ -38,7 +39,7 @@ class ROSBagHandler():
             os.system('rosnode kill /rosbag_node')
 
         else:
-            print("already /logging is " + str(self.logging))
+            print("already /logging is " + str(self.logging))   
 
 def main():
     rospy.init_node('rosbag_handler')

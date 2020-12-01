@@ -1,0 +1,3 @@
+<launch>
+    <node name="rosbag_handler" pkg="rosbag_dataset" type="rosbag_handler.py" output="screen"/> 
+</launch>
