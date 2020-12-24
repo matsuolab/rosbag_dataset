@@ -12,12 +12,17 @@ class ROSBagHandler():
         self.logging = False
         os.system('rostopic list')
 
+        self.dataset_name = rospy.get_param('dataset_name', '')
         self.thread = Thread(target=self.threaded_rosbag)
 
         # rospack = rospkg.RosPack()
         # package_path = rospack.get_path('teleop_ros')
         # self.dataset_path = package_path + '/dataset/'
         self.dataset_path = '~/dataset/'
+        if self.dataset_name:
+            self.dataset_path = os.path.join(self.dataset_path, self.dataset_name)
+            if not os.path.isdir(self.dataset_path):
+                os.makedirs(self.dataset_path)
         
         rospy.Subscriber('/logging', Bool, self.command_cb)
         # rospy.Service('logging_service', Trigger, self.logging_cb)

@@ -1,3 +1,5 @@
 <launch>
-    <node name="rosbag_handler" pkg="rosbag_dataset" type="rosbag_handler.py" output="screen"/> 
+    <arg name="dataset_name" default=""/>
+    <param name="dataset_name" type="string" value="$(arg dataset_name)"/>
+    <node name="rosbag_handler" pkg="rosbag_dataset" type="rosbag_handler.py" output="screen" />
 </launch>
