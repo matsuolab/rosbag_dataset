@@ -4,6 +4,7 @@ import rospy
 import rospkg
 import datetime
 import os
+import yaml
 from threading import Thread
 from std_msgs.msg import Bool
 
@@ -12,11 +13,18 @@ class ROSBagHandler():
         self.logging = False
         os.system('rostopic list')
 
-        self.thread = Thread(target=self.threaded_rosbag)
+        # self.thread = Thread(target=self.threaded_rosbag)
 
         rospack = rospkg.RosPack()
-        package_path = rospack.get_path('teleop_ros')
-        # self.dataset_path = package_path + '/dataset/'
+        package_path = rospack.get_path('rosbag_dataset')
+
+        topics_path = package_path + '/config/topics_to_save.yml'
+        with open(topics_path, "r") as f:
+            self.topics = yaml.load(f, Loader=yaml.FullLoader)
+            if (self.topics == None):
+                self.topics = "-a"
+            print('rosbag record ' + self.topics + ' -O ')
+
         self.dataset_path = '~/dataset/'
         
         command_sub_ = rospy.Subscriber('/logging', Bool, self.command_cb)
@@ -25,7 +33,7 @@ class ROSBagHandler():
     def threaded_rosbag(self):
         now = datetime.datetime.now()
         bagfile = now.strftime('%Y%m%d_%H%M%S_%f') + ".bag"
-        os.system('rosbag record -a -O ' + self.dataset_path + bagfile + ' __name:=rosbag_node')
+        os.system('rosbag record ' + self.topics + ' -O ' + self.dataset_path + bagfile + ' __name:=rosbag_node')
 
     def command_cb(self, msg):
         if msg.data == True and self.logging == False:
