@@ -23,14 +23,16 @@ class ROSBagHandler():
             self.topics = yaml.load(f, Loader=yaml.FullLoader)
             if (self.topics == None):
                 self.topics = "-a"
-            print('rosbag record ' + self.topics + ' -O ')
+            print('rosbag record ' + self.topics)
 
         self.dataset_name = rospy.get_param('dataset_name', '')
         self.thread = Thread(target=self.threaded_rosbag)
-        self.dataset_path = '~/dataset/'
+        self.dataset_path = os.path.expanduser("~") + '/dataset/'
         if self.dataset_name:
-            self.dataset_path = os.path.join(self.dataset_path, self.dataset_name)
+            # self.dataset_path = os.path.join(self.dataset_path, self.dataset_name)
+            self.dataset_path = self.dataset_path + self.dataset_name + "/"
             if not os.path.isdir(self.dataset_path):
+                print("mkdir done")
                 os.makedirs(self.dataset_path)
         
         rospy.Subscriber('/logging', Bool, self.command_cb)
