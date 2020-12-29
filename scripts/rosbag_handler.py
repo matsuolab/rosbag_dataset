@@ -25,9 +25,16 @@ class ROSBagHandler():
                 self.topics = "-a"
             print('rosbag record ' + self.topics + ' -O ')
 
+        self.dataset_name = rospy.get_param('dataset_name', '')
+        self.thread = Thread(target=self.threaded_rosbag)
         self.dataset_path = '~/dataset/'
+        if self.dataset_name:
+            self.dataset_path = os.path.join(self.dataset_path, self.dataset_name)
+            if not os.path.isdir(self.dataset_path):
+                os.makedirs(self.dataset_path)
         
-        command_sub_ = rospy.Subscriber('/logging', Bool, self.command_cb)
+        rospy.Subscriber('/logging', Bool, self.command_cb)
+        # rospy.Service('logging_service', Trigger, self.logging_cb)
         rospy.spin()
 
     def threaded_rosbag(self):
@@ -46,7 +53,7 @@ class ROSBagHandler():
             os.system('rosnode kill /rosbag_node')
 
         else:
-            print("already /logging is " + str(self.logging))
+            print("already /logging is " + str(self.logging))   
 
 def main():
     rospy.init_node('rosbag_handler')
