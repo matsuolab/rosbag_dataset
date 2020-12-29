@@ -5,8 +5,9 @@ import rospkg
 import datetime
 import os
 import yaml
+import time
 from threading import Thread
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Int8
 
 class ROSBagHandler():
     def __init__(self):
@@ -35,24 +36,37 @@ class ROSBagHandler():
                 print("mkdir done")
                 os.makedirs(self.dataset_path)
         
-        rospy.Subscriber('/logging', Bool, self.command_cb)
+        rospy.Subscriber('/logging', Int8, self.command_cb)
         # rospy.Service('logging_service', Trigger, self.logging_cb)
         rospy.spin()
 
     def threaded_rosbag(self):
         now = datetime.datetime.now()
-        bagfile = now.strftime('%Y%m%d_%H%M%S_%f') + ".bag"
-        os.system('rosbag record ' + self.topics + ' -O ' + self.dataset_path + bagfile + ' __name:=rosbag_node')
+        self.bagfile = now.strftime('%Y%m%d_%H%M%S_%f') + ".bag"
+        os.system('rosbag record ' + self.topics + ' -O ' + self.dataset_path + self.bagfile + ' __name:=rosbag_node')
 
     def command_cb(self, msg):
-        if msg.data == True and self.logging == False:
+        if msg.data == 1 and self.logging == False:
             self.logging = True
             thread = Thread(target=self.threaded_rosbag)
             thread.start()
     
-        elif msg.data == False and self.logging == True:
+        elif msg.data == 0 and self.logging == True:
             self.logging = False
             os.system('rosnode kill /rosbag_node')
+
+        elif msg.data == 2 and self.logging == True:
+            self.logging = False
+            os.system('rosnode kill /rosbag_node')
+            for j in range(20):
+                time.sleep(0.5)
+                if os.path.exists(self.dataset_path + self.bagfile):
+                    os.remove(self.dataset_path + self.bagfile)
+                    print("delete succeeded")
+                    break
+                else:
+                    print("wait a moment")
+                    continue
 
         else:
             print("already /logging is " + str(self.logging))   
