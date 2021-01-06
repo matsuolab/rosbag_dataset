@@ -9,6 +9,13 @@ import time
 from threading import Thread
 from std_msgs.msg import Bool, Int8
 
+
+class LoggerCommand:
+    STOP = 0
+    START = 1
+    ERROR = 2
+
+
 class ROSBagHandler():
     def __init__(self):
         self.logging = False
@@ -35,7 +42,7 @@ class ROSBagHandler():
             if not os.path.isdir(self.dataset_path):
                 print("mkdir done")
                 os.makedirs(self.dataset_path)
-        
+
         rospy.Subscriber('/logging', Int8, self.command_cb)
         # rospy.Service('logging_service', Trigger, self.logging_cb)
         rospy.spin()
@@ -46,16 +53,16 @@ class ROSBagHandler():
         os.system('rosbag record ' + self.topics + ' -O ' + self.dataset_path + self.bagfile + ' __name:=rosbag_node')
 
     def command_cb(self, msg):
-        if msg.data == 1 and self.logging == False:
+        if msg.data == LoggerCommand.START and self.logging == False:
             self.logging = True
             thread = Thread(target=self.threaded_rosbag)
             thread.start()
-    
-        elif msg.data == 0 and self.logging == True:
+
+        elif msg.data == LoggerCommand.STOP and self.logging == True:
             self.logging = False
             os.system('rosnode kill /rosbag_node')
 
-        elif msg.data == 2 and self.logging == True:
+        elif msg.data == LoggerCommand.ERROR and self.logging == True:
             self.logging = False
             os.system('rosnode kill /rosbag_node')
             for j in range(20):
@@ -69,13 +76,16 @@ class ROSBagHandler():
                     continue
 
         else:
-            print("already /logging is " + str(self.logging))   
+            print("already /logging is " + str(self.logging))
+
 
 def main():
     rospy.init_node('rosbag_handler')
     ROSBagHandler()
 
+
 if __name__ == '__main__':
     try:
         main()
-    except rospy.ROSInterruptException: pass
+    except rospy.ROSInterruptException:
+        pass
