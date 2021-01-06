@@ -65,18 +65,21 @@ class ROSBagHandler():
         elif msg.data == LoggerCommand.ERROR and self.logging == True:
             self.logging = False
             os.system('rosnode kill /rosbag_node')
-            for j in range(20):
-                time.sleep(0.5)
+            for j in range(60):
+                time.sleep(1)
                 if os.path.exists(self.dataset_path + self.bagfile):
                     os.remove(self.dataset_path + self.bagfile)
                     print("delete succeeded")
                     break
                 else:
-                    print("wait a moment")
-                    continue
+                    if j == 60:
+                        print("!!!!!!! rosbag delete timeout !!!!!!!!!!!")
+                    else:
+                        print("wait a moment")
+                        continue
 
         else:
-            print("already /logging is " + str(self.logging))
+            print("receive " + msg.data + " but already /logging is " + str(self.logging))
 
 
 def main():
