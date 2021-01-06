@@ -79,7 +79,7 @@ class ROSBagHandler():
                         continue
 
         else:
-            print("receive " + msg.data + " but already /logging is " + str(self.logging))
+            print("receive " + str(msg.data) + " but already /logging is " + str(self.logging))
 
 
 def main():
