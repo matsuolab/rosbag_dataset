@@ -51,3 +51,6 @@ qtcreator-*
 CATKIN_IGNORE
 
 config/topics_to_save.yml
+
+dataset/
+.vscode

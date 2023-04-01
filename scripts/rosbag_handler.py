@@ -35,7 +35,8 @@ class ROSBagHandler():
 
         self.dataset_name = rospy.get_param('dataset_name', '')
         self.thread = Thread(target=self.threaded_rosbag)
-        self.dataset_path = os.path.expanduser("~") + '/dataset/'
+        self.dataset_path = os.path.expanduser("~") + '/takanami/hsr_ws/src/rosbag_dataset/dataset/'
+        # self.dataset_path = 'dataset/'
         if self.dataset_name:
             # self.dataset_path = os.path.join(self.dataset_path, self.dataset_name)
             self.dataset_path = self.dataset_path + self.dataset_name + "/"
