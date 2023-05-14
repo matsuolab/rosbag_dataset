@@ -1,0 +1,13 @@
+/hsrb/head_rgbd_sensor/rgb/image_raw
+/hsrb/hand_camera/image_raw
+/hsrb/joint_states
+/hsrb/command_velocity
+/hsrb/arm_trajectory_controller/command
+/hsrb/gripper_controller/command
+/hsrb/gripper_controller/grasp/goal
+/hsrb/head_trajectory_controller/command 
+/tf
+/mss/m2s/base_pub
+/controller/pose_c2
+/controller/trigger_c2
+/controller/trigger_c1
